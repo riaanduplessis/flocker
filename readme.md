@@ -1,6 +1,6 @@
 # Flutter image for docker
 
-![Build](https://github.com/riaanduplessis/flutter-image/workflows/CI/badge.svg?branch=master)
+![CI](https://github.com/riaanduplessis/flutter-image/workflows/CI/badge.svg?branch=master)
 
 This image automatically installs and sets up the Flutter SDK and android SDK.
 
