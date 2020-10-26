@@ -14,24 +14,24 @@ RUN mkdir -p Android/sdk
 ENV ANDROID_SDK_ROOT /home/developer/Android/sdk
 RUN mkdir -p .android && touch .android/repositories.cfg
 
-ARG BUILD_TOOLS_VER
-ENV BUILD_TOOLS_VER=${BUILD_TOOLS_VER:-29.0.2}
+ARG build_tools_ver
+ENV build_tools_ver=${build_tools_ver:-29.0.2}
 
-ARG PATCHER_VER
-ENV PATCHER_VER=${PATCHER_VER:-v4}
+ARG patcher_ver
+ENV patcher_ver=${patcher_ver:-v4}
 
-ARG PLATFORMS
-ENV PLATFORMS=${PLATFORMS:-"android-29"}
+ARG platforms
+ENV platforms=${platforms:-"android-29"}
 
-ARG SOURCES
-ENV SOURCES=${SOURCES:-"android-29"}
+ARG sources
+ENV sources=${sources:-"android-29"}
 
 # Set up Android SDK
 RUN wget -O sdk-tools.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
 RUN unzip sdk-tools.zip && rm sdk-tools.zip
 RUN mv tools Android/sdk/tools
 RUN cd Android/sdk/tools/bin && yes | ./sdkmanager --licenses
-RUN cd Android/sdk/tools/bin && ./sdkmanager "build-tools;$BUILD_TOOLS_VER" "patcher;$PATCHER_VER" "platform-tools" "platforms;$PLATFORMS" "sources;$SOURCES"
+RUN cd Android/sdk/tools/bin && ./sdkmanager "build-tools;$build_tools_ver" "patcher;$patcher_ver" "platform-tools" "platforms;$platforms" "sources;$sources"
 ENV PATH "$PATH:/home/developer/Android/sdk/platform-tools"
 
 # Download Flutter SDK
