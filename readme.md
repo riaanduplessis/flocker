@@ -1,29 +1,56 @@
-# Flutter image for docker
+# Flocker - Flutter in Docker
 
-![CI](https://github.com/riaanduplessis/flutter-image/workflows/CI/badge.svg?branch=master)
+Docker image preinstalled with Flutter and the Android SDK.
 
-This image automatically installs and sets up the Flutter SDK and android SDK.
+[![Build](https://github.com/riaanduplessis/flutter-image/actions/workflows/build-push.yml/badge.svg)](https://github.com/riaanduplessis/flutter-image/actions/workflows/build-push.yml)
 
-## Pull image
+---
 
+## Included Tools
+
+These tools are all available in the image.
+
+- apkanalyzer
+- avdmanager
+- dart
+- flutter
+- lint
+- profgen
+- retrace
+- screenshot2
+- sdkmanager
+
+## Usage
+
+Pulling the image:
+
+```shell
+docker pull ghcr.io/riaanduplessis/flocker
 ```
-docker pull riaanduplessis/flutter:latest
+
+The image entrypoint is set to `/bin/bash`, so simply running the image
+without any extra commands will start a shell session inside the container after startup:
+
+```shell
+docker run --rm -it ghcr.io/riaanduplessis/flocker
 ```
 
-## Persisted build arguments
+Starting a new Flutter project:
 
-You can pass these values for these variables when building the image to change the android SDK versioning as required.
+```shell
+# Simply create the project with defaults set
+docker run --rm ghcr.io/riaanduplessis/flocker flutter create myapp
 
-| NAME            | Default    |
-|-----------------|:----------:|
-| build_tools_ver | 29.0.2     |
-| patcher_ver     | v4         |
-| platforms       | android-29 |
-| sources         | android-29 |
-
-### Building image with custom arguments
-
-Below is an example of building the image with SDK tools for API level 28
+# Create a project with specific options
+docker run --rm ghcr.io/riaanduplessis/flocker flutter create --project-name myapp --org dev.flutter --android-language java --ios-language objc myapp
 ```
-docker build --build-arg platforms=android-28 --build-arg sources=android-28 .
-```
+
+---
+
+## License
+
+[View license information](https://github.com/flutter/flutter/blob/master/LICENSE) for the software contained in this image.
+
+As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
+
+As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.

@@ -1,42 +1,76 @@
-FROM ubuntu:18.04
-LABEL Description="This image sets up the android and flutter SDK" Vendor="riaanduplessis" Version="latest"
+# Copyright (c) 2021 Riaan du Plessis. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-# Prerequisites
-RUN apt update && apt install -y curl git unzip xz-utils zip libglu1-mesa openjdk-8-jdk wget
+# syntax=docker/dockerfile:1.3
+FROM debian:stretch
 
-# Set up new user
-RUN useradd -ms /bin/bash developer
-USER developer
-WORKDIR /home/developer
-   
-# Prepare Android directories and system variables
-RUN mkdir -p Android/sdk
-ENV ANDROID_SDK_ROOT /home/developer/Android/sdk
-RUN mkdir -p .android && touch .android/repositories.cfg
+LABEL dev.riaanduplessis.name="Flocker"
+LABEL dev.riaanduplessis.description="Docker image for Flutter development"
 
-ARG build_tools_ver
-ENV build_tools_ver=${build_tools_ver:-29.0.2}
+# Install Dependencies
+RUN apt update && apt install -y \
+  git \
+  wget \
+  curl \
+  unzip \
+  lib32stdc++6 \
+  libglu1-mesa \
+  default-jdk-headless
 
-ARG patcher_ver
-ENV patcher_ver=${patcher_ver:-v4}
+# Set the URL where the tools will be downloaded from
+ENV ANDROID_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip"
 
-ARG platforms
-ENV platforms=${platforms:-"android-29"}
+# Set the primary android and flutter root directories
+ENV ANDROID_HOME="/opt/android"
+ENV FLUTTER_HOME="/opt/flutter"
 
-ARG sources
-ENV sources=${sources:-"android-29"}
+# Set the directory of the command line tools
+ENV ANDROID_CMDLINE_TOOLS="${ANDROID_HOME}/cmdline-tools"
 
-# Set up Android SDK
-RUN wget -O sdk-tools.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
-RUN unzip sdk-tools.zip && rm sdk-tools.zip
-RUN mv tools Android/sdk/tools
-RUN cd Android/sdk/tools/bin && yes | ./sdkmanager --licenses
-RUN cd Android/sdk/tools/bin && ./sdkmanager "build-tools;$build_tools_ver" "patcher;$patcher_ver" "platform-tools" "platforms;$platforms" "sources;$sources"
-ENV PATH "$PATH:/home/developer/Android/sdk/platform-tools"
+# Set the directory where the command line tools .zip file will be temporarily saved to.
+ENV ANDROID_ARCHIVE_FILE="${ANDROID_HOME}/archive.zip"
 
-# Download Flutter SDK
-RUN git clone https://github.com/flutter/flutter.git -b stable --depth 1
-ENV PATH "$PATH:/home/developer/flutter/bin"
-   
-# Run basic check to download Dark SDK
-RUN flutter doctor
+# Add the tools to the system path
+ENV PATH="${ANDROID_CMDLINE_TOOLS}/bin:${PATH}"
+ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
+
+# Install the Android Command Line Tools
+RUN mkdir -p "${ANDROID_HOME}"
+RUN wget "${ANDROID_TOOLS_URL}" -O "${ANDROID_ARCHIVE_FILE}"
+RUN unzip -d "${ANDROID_HOME}" "${ANDROID_ARCHIVE_FILE}"
+RUN yes "y" | sdkmanager --sdk_root="${ANDROID_CMDLINE_TOOLS}/latest" "build-tools;31.0.0" "platforms;android-31" "platform-tools"
+RUN rm "${ANDROID_ARCHIVE_FILE}"
+
+# Get the latest stable Flutter from GitHub
+RUN git clone https://github.com/flutter/flutter.git "${FLUTTER_HOME}" -b stable --depth 1
+
+# Disable analytics and crash reporting on the builder
+RUN flutter config  --no-analytics
+
+# Perform an artifact precache so that no extra assets need to be downloaded on demand
+RUN flutter precache
+
+# Enable the Flutter development tools
+RUN flutter pub global activate devtools
+
+# Accept licenses
+RUN yes "y" | flutter doctor --android-licenses
+
+# Perform a doctor run
+RUN flutter doctor -v
+
+# Perform a flutter upgrade
+RUN flutter upgrade
+
+ENTRYPOINT [ "/bin/bash" ]
