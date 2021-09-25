@@ -26,7 +26,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      security_events: write
+      security-events: write
 
     steps:
       - name: Check out source
