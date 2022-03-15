@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # syntax=docker/dockerfile:1.3
-FROM debian:stretch
+FROM debian:bullseye-20220125
 
 LABEL dev.riaanduplessis.name="Flocker"
 LABEL dev.riaanduplessis.description="Docker image for Flutter development"
