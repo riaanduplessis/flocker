@@ -52,17 +52,3 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.IMAGE_TAGS }}
-
-      - name: Run Anchore scan with GitHub Advanced Security code scanning
-        uses: anchore/scan-action@v3
-        id: scan
-        with:
-          image: ghcr.io/${{ github.repository_owner }}/flocker:${{ github.sha }}
-          acs-report-enable: true
-          fail-build: false
-          severity-cutoff: critical
-
-      - name: Upload Anchore Scan Report
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
