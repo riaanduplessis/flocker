@@ -29,27 +29,26 @@ RUN apt update && apt install -y \
   default-jdk-headless
 
 # Set the URL where the tools will be downloaded from
-ENV ANDROID_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip"
-
-# Set the primary android and flutter root directories
-ENV ANDROID_HOME="/opt/android"
-ENV FLUTTER_HOME="/opt/flutter"
+ENV ANDROID_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip"
 
 # Set the directory of the command line tools
-ENV ANDROID_CMDLINE_TOOLS="${ANDROID_HOME}/cmdline-tools"
+ENV ANDROID_CMDLINE_TOOLS="/opt/android/cmdline-tools"
+
+# Set the primary android and flutter root directories
+ENV ANDROID_HOME="${ANDROID_CMDLINE_TOOLS}/latest"
+ENV FLUTTER_HOME="/opt/flutter"
 
 # Set the directory where the command line tools .zip file will be temporarily saved to.
-ENV ANDROID_ARCHIVE_FILE="${ANDROID_HOME}/archive.zip"
+ENV ANDROID_ARCHIVE_FILE="/opt/android/archive.zip"
 
 # Add the tools to the system path
-ENV PATH="${ANDROID_CMDLINE_TOOLS}/bin:${PATH}"
-ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
+ENV PATH="${ANDROID_CMDLINE_TOOLS}/bin:${FLUTTER_HOME}/bin:${PATH}"
 
 # Install the Android Command Line Tools
-RUN mkdir -p "${ANDROID_HOME}"
+RUN mkdir -p "/opt/android"
 RUN wget "${ANDROID_TOOLS_URL}" -O "${ANDROID_ARCHIVE_FILE}"
-RUN unzip -d "${ANDROID_HOME}" "${ANDROID_ARCHIVE_FILE}"
-RUN yes "y" | sdkmanager --sdk_root="${ANDROID_CMDLINE_TOOLS}/latest" "build-tools;31.0.0" "platforms;android-31" "platform-tools"
+RUN unzip -d "/opt/android" "${ANDROID_ARCHIVE_FILE}"
+RUN yes "y" | sdkmanager --sdk_root="${ANDROID_HOME}" "build-tools;31.0.0" "platforms;android-31" "platform-tools"
 RUN rm "${ANDROID_ARCHIVE_FILE}"
 
 # Get the latest stable Flutter from GitHub
