@@ -2,13 +2,13 @@
 
 Docker image preinstalled with Flutter and the Android SDK.
 
-[![Build](https://github.com/riaanduplessis/flutter-image/actions/workflows/build-push.yml/badge.svg)](https://github.com/riaanduplessis/flutter-image/actions/workflows/build-push.yml)
+[![Build & Scan](https://github.com/riaanduplessis/flocker/actions/workflows/build-push.yml/badge.svg?branch=main)](https://github.com/riaanduplessis/flocker/actions/workflows/build-push.yml)
 
 ---
 
 ## Included Tools
 
-These tools are all available in the image.
+These tools are all available on the command line in the image.
 
 - apkanalyzer
 - avdmanager
@@ -19,6 +19,14 @@ These tools are all available in the image.
 - retrace
 - screenshot2
 - sdkmanager
+
+## Installed Android Packages
+
+| Path                 | Version | Description                | Location             |
+|----------------------|---------|----------------------------|----------------------|
+| build-tools;32.0.0   | 32.0.0  | Android SDK Build-Tools 32 | build-tools/32.0.0   |
+| platform-tools       | 33.0.1  | Android SDK Platform-Tools | platform-tools       |
+| platforms;android-31 | 1       | Android SDK Platform 32    | platforms/android-32 |
 
 ## Usage
 
@@ -44,6 +52,14 @@ docker run --rm ghcr.io/riaanduplessis/flocker flutter create myapp
 # Create a project with specific options
 docker run --rm ghcr.io/riaanduplessis/flocker flutter create --project-name myapp --org dev.flutter --android-language java --ios-language objc myapp
 ```
+
+## Building
+
+### Available Build Args
+
+ANDROID_TOOLS_URL - URL to download the Android SDK Tools from.
+BUILD_TOOLS_VER - Version of the Android SDK Build Tools to use.
+PLATFORM_VER - Version of the Android SDK Platform to use.
 
 ---
 
